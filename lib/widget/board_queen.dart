@@ -51,7 +51,8 @@ class _BoardQueenState extends State<BoardQueen> {
         _listQueen.addAll(row);
       }
     } finally {
-      widget.fn(_listQueen);
+      widget.fn(List<Queen>.generate(
+          _listQueen.length, (index) => _listQueen[index]));
     }
   }
 }

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
+enum Hill { steepest_hill_climbing, steepest_hill_climbing_sideways }
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -18,6 +20,12 @@ class _HomePageState extends State<HomePage> {
 
   List<Queen>? listQueen = null;
   String _result = '';
+
+  Hill? _hill = Hill.steepest_hill_climbing;
+
+  final focusNode = FocusNode();
+
+  bool _isButtonDisabled = false;
 
   @override
   void initState() {
@@ -84,24 +92,103 @@ class _HomePageState extends State<HomePage> {
                       },
                       controller: _editingBoardSizeController,
                       keyboardType: TextInputType.number,
+                      focusNode: focusNode,
                       decoration:
                           InputDecoration.collapsed(hintText: 'Board size'),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        steepest_hill_climbing(listQueen!,
-                                int.parse(_editingBoardSizeController.text))
-                            .listen((res) {
-                          setState(() {
-                            listQueen = res;
-                          });
+                  ListTile(
+                    title: Text('steepest hill climbing'),
+                    leading: Radio<Hill>(
+                      groupValue: _hill,
+                      value: Hill.steepest_hill_climbing,
+                      onChanged: (value) {
+                        setState(() {
+                          _hill = value;
                         });
                       },
-                      child: Text('Start'),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('steepest hill climbing sideways'),
+                    leading: Radio<Hill>(
+                      groupValue: _hill,
+                      value: Hill.steepest_hill_climbing_sideways,
+                      onChanged: (value) {
+                        setState(() {
+                          _hill = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey),
+                          onPressed: () {
+                            focusNode.requestFocus();
+                            setState(() {
+                              listQueen = null;
+                              _hill = Hill.steepest_hill_climbing;
+                              _isButtonDisabled = false;
+                            });
+                          },
+                          child: Text('Restart'),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () {
+                                  setState(() {
+                                    _isButtonDisabled = true;
+                                  });
+                                  switch (_hill) {
+                                    case Hill.steepest_hill_climbing:
+                                      steepest_hill_climbing(
+                                              listQueen!,
+                                              int.parse(
+                                                  _editingBoardSizeController
+                                                      .text))
+                                          .listen((res) {
+                                        setState(() {
+                                          listQueen = res;
+                                        });
+                                      }).onDone(() {
+                                        setState(() {
+                                          _isButtonDisabled = false;
+                                        });
+                                      });
+                                      break;
+                                    case Hill.steepest_hill_climbing_sideways:
+                                      steepest_hill_climbing_sideways(
+                                              listQueen!,
+                                              int.parse(
+                                                  _editingBoardSizeController
+                                                      .text))
+                                          .listen((res) {
+                                        setState(() {
+                                          listQueen = res;
+                                        });
+                                      }).onDone(() {
+                                        setState(() {
+                                          _isButtonDisabled = false;
+                                        });
+                                      });
+                                      break;
+                                    default:
+                                  }
+                                },
+                          child: Text('Start'),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -111,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                           0)
                     Column(
                       children: [
-                        Text('Result:'),
+                        Text(_isButtonDisabled ? '...' : 'Result:'),
                         Container(
                           height: 30,
                           alignment: Alignment.center,

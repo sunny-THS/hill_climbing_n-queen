@@ -103,7 +103,9 @@ List<Queen> findChild(List<Queen> board, int size, [sidewaysMove = false]) {
             current_h_cost = temp_h_cost;
           } else if (temp_h_cost == current_h_cost) {
             same_cost_children[same_cost_children.length] = tempBoard;
-            final x = Random().nextInt(same_cost_children.length - 1);
+            final x = same_cost_children.length - 1 != 0
+                ? Random().nextInt(same_cost_children.length - 1)
+                : 0;
             child = same_cost_children[x]!;
           }
         }
@@ -123,10 +125,31 @@ Stream<List<Queen>> steepest_hill_climbing(List<Queen> board, int size) async* {
   List<Queen> currentBoard = board;
 
   while (true) {
+    final nextNode = findChild(currentBoard, size);
+
+    if (nextNode.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      yield nextNode;
+    }
+
+    if (nextNode.isEmpty ||
+        nextNode.isNotEmpty && determine_h_cost(nextNode, size) == 0) {
+      break;
+    }
+
+    currentBoard = nextNode;
+  }
+}
+
+Stream<List<Queen>> steepest_hill_climbing_sideways(
+    List<Queen> board, int size) async* {
+  List<Queen> currentBoard = board;
+
+  while (true) {
     final nextNode = findChild(currentBoard, size, true);
 
     if (nextNode.isNotEmpty) {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 100));
       yield nextNode;
     }
 
