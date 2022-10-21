@@ -27,6 +27,8 @@ class _HomePageState extends State<HomePage> {
 
   bool _isButtonDisabled = false;
 
+  int _step = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -137,7 +139,9 @@ class _HomePageState extends State<HomePage> {
                             setState(() {
                               listQueen = null;
                               _hill = Hill.steepest_hill_climbing;
+                              _result = '';
                               _isButtonDisabled = false;
+                              _step = 0;
                             });
                           },
                           child: Text('Restart'),
@@ -160,10 +164,14 @@ class _HomePageState extends State<HomePage> {
                                           .listen((res) {
                                         setState(() {
                                           listQueen = res;
+                                          _step++;
                                         });
                                       }).onDone(() {
                                         setState(() {
+                                          _result =
+                                              'h = ${determine_h_cost(listQueen!, int.parse(_editingBoardSizeController.text))}\nstep = $_step';
                                           _isButtonDisabled = false;
+                                          _step = 0;
                                         });
                                       });
                                       break;
@@ -176,10 +184,14 @@ class _HomePageState extends State<HomePage> {
                                           .listen((res) {
                                         setState(() {
                                           listQueen = res;
+                                          _step++;
                                         });
                                       }).onDone(() {
                                         setState(() {
+                                          _result =
+                                              'h = ${determine_h_cost(listQueen!, int.parse(_editingBoardSizeController.text))}\nstep = $_step';
                                           _isButtonDisabled = false;
+                                          _step = 0;
                                         });
                                       });
                                       break;
@@ -192,24 +204,14 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (listQueen != null &&
-                      determine_h_cost(listQueen!,
-                              int.parse(_editingBoardSizeController.text)) ==
-                          0)
-                    Column(
-                      children: [
-                        Text(_isButtonDisabled ? '...' : 'Result:'),
-                        Container(
-                          height: 30,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text('$_result'),
-                        ),
-                      ],
+                  if (_result.isNotEmpty)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Result:'),
+                          Text('$_result'),
+                        ],
+                      ),
                     )
                 ],
               ),
