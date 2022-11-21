@@ -76,7 +76,7 @@ int determine_h_cost(List<Queen> board, int size) {
     }
   }
 
-  return collisions;
+  return collisions ~/ 2;
 }
 
 List<Queen> findChild(List<Queen> board, int size, [sidewaysMove = false]) {

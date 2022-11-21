@@ -16,9 +16,75 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int firstH = 0;
   TextEditingController _editingBoardSizeController = TextEditingController();
 
-  List<Queen>? listQueen = null;
+  List<Queen>? listQueen = [
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: true),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+    Queen(state: false),
+  ];
   String _result = '';
 
   Hill? _hill = Hill.steepest_hill_climbing;
@@ -100,6 +166,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  // Text(
+                  //     'h = ${determine_h_cost(listQueen ?? [], int.parse(_editingBoardSizeController.text))}'),
+                  // const SizedBox(height: 10),
                   ListTile(
                     title: Text('steepest hill climbing'),
                     leading: Radio<Hill>(
@@ -142,6 +211,7 @@ class _HomePageState extends State<HomePage> {
                               _result = '';
                               _isButtonDisabled = false;
                               _step = 0;
+                              firstH = 0;
                             });
                           },
                           child: Text('Restart'),
@@ -153,6 +223,12 @@ class _HomePageState extends State<HomePage> {
                               : () {
                                   setState(() {
                                     _isButtonDisabled = true;
+
+                                    if (firstH == 0)
+                                      firstH = determine_h_cost(
+                                          listQueen!,
+                                          int.parse(_editingBoardSizeController
+                                              .text));
                                   });
                                   switch (_hill) {
                                     case Hill.steepest_hill_climbing:
@@ -204,6 +280,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  firstH != 0 ? Text('First h: $firstH') : const SizedBox(),
+                  const SizedBox(height: 14),
                   if (_result.isNotEmpty)
                     Expanded(
                       child: Column(
