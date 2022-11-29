@@ -29,7 +29,7 @@ class _BoardChessState extends State<BoardChess> {
           isZiczacBox = isZiczac ? index % 2 != 0 : index % 2 == 0;
 
           return Container(
-            child: Text('$index'),
+            // child: Text('$index'),
             color: isZiczacBox ? Color(0xFF7d411c) : Color(0xffe0d0b3),
           );
         },

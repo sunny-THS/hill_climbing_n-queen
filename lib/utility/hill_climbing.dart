@@ -79,6 +79,17 @@ int determine_h_cost(List<Queen> board, int size) {
   return collisions ~/ 2;
 }
 
+List<Queen> generateRandomBoard(size) {
+  List<Queen> generateBoard = [];
+  for (var i = 0; i < size; i++) {
+    final j = Random().nextInt(size - 1);
+    List<Queen> newRow = List.generate(size, (index) => Queen());
+    newRow[j].state = true;
+    generateBoard.addAll(newRow);
+  }
+  return generateBoard;
+}
+
 List<Queen> findChild(List<Queen> board, int size, [sidewaysMove = false]) {
   List<Queen> child = [];
   int current_h_cost = determine_h_cost(board, size);
@@ -145,7 +156,9 @@ Stream<List<Queen>> steepest_hill_climbing_sideways(
     List<Queen> board, int size) async* {
   List<Queen> currentBoard = board;
 
-  while (true) {
+  int maxIterations = 200;
+
+  while ((--maxIterations) != 0) {
     final nextNode = findChild(currentBoard, size, true);
 
     if (nextNode.isNotEmpty) {
@@ -155,6 +168,42 @@ Stream<List<Queen>> steepest_hill_climbing_sideways(
 
     if (nextNode.isEmpty ||
         nextNode.isNotEmpty && determine_h_cost(nextNode, size) == 0) {
+      break;
+    }
+
+    currentBoard = nextNode;
+  }
+}
+
+Stream<List<Queen>> steepest_hill_climbing_random(
+    List<Queen> board, int size) async* {
+  List<Queen> currentBoard = board;
+
+  int countSameCost = 0;
+  int lastCost = 0;
+  int currentCost = 0;
+
+  while (true) {
+    List<Queen> nextNode = findChild(currentBoard, size, true);
+
+    currentCost = determine_h_cost(nextNode, size);
+
+    if (nextNode.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (lastCost != currentCost) {
+        lastCost = currentCost;
+        countSameCost = 0;
+      } else {
+        countSameCost = countSameCost > 9 ? 0 : countSameCost + 1;
+      }
+      yield nextNode;
+    }
+
+    if (nextNode.isEmpty || countSameCost == 10) {
+      nextNode = generateRandomBoard(size);
+    }
+
+    if (determine_h_cost(nextNode, size) == 0) {
       break;
     }
 

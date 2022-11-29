@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-enum Hill { steepest_hill_climbing, steepest_hill_climbing_sideways }
+enum Hill {
+  steepest_hill_climbing,
+  steepest_hill_climbing_sideways,
+  steepest_hill_climbing_random
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -193,6 +197,18 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
+                  ListTile(
+                    title: Text('steepest hill climbing random'),
+                    leading: Radio<Hill>(
+                      groupValue: _hill,
+                      value: Hill.steepest_hill_climbing_random,
+                      onChanged: (value) {
+                        setState(() {
+                          _hill = value;
+                        });
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   Container(
                     alignment: Alignment.centerRight,
@@ -253,6 +269,26 @@ class _HomePageState extends State<HomePage> {
                                       break;
                                     case Hill.steepest_hill_climbing_sideways:
                                       steepest_hill_climbing_sideways(
+                                              listQueen!,
+                                              int.parse(
+                                                  _editingBoardSizeController
+                                                      .text))
+                                          .listen((res) {
+                                        setState(() {
+                                          listQueen = res;
+                                          _step++;
+                                        });
+                                      }).onDone(() {
+                                        setState(() {
+                                          _result =
+                                              'h = ${determine_h_cost(listQueen!, int.parse(_editingBoardSizeController.text))}\nstep = $_step';
+                                          _isButtonDisabled = false;
+                                          _step = 0;
+                                        });
+                                      });
+                                      break;
+                                    case Hill.steepest_hill_climbing_random:
+                                      steepest_hill_climbing_random(
                                               listQueen!,
                                               int.parse(
                                                   _editingBoardSizeController
